@@ -24,6 +24,7 @@ hs_err_pid*
 
 # idea files
 *.iml
+.idea
 
 # target
 target
