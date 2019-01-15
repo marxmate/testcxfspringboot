@@ -3,14 +3,3 @@ cxf:
   jaxrs:
     component-scan: true
     classes-scan-packages: server
-
-swagger:
-  title: Backend Application
-  description: Swagger documentation of Backend Application REST services
-  scan: true
-  scanAllResources: true
-  resourcePackage: server.api
-  apiKeyAuthDefinition:
-    name: Authorization
-    in: header
-    type: http
