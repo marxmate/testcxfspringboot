@@ -17,6 +17,6 @@ public class TestControllerImpl implements TestController {
 
     @Override
     public Test getTest() {
-        return testService.getClient().getTest("nameIn", 6);
+        return testService.getClient().getTestObject("nameIn", 6);
     }
 }

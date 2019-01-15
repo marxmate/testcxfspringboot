@@ -1,33 +1,28 @@
 package client.service;
 
 
-import org.glassfish.jersey.client.proxy.WebResourceFactory;
+import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
+import org.apache.cxf.jaxrs.client.WebClient;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientRequestFilter;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.ext.Provider;
 import java.lang.reflect.ParameterizedType;
-import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractService<T> implements InitializingBean {
+
+    private static List<Object> providers;
 
     @Autowired
     private ApplicationContext applicationContext;
 
-    @Value("${cxf.metrics.enabled:false}")
-    private boolean metricsEnabled;
-
     private final Class<T> resourceClass;
     private T resource;
+    private long defaultTimeOut = 300000;
 
     @SuppressWarnings("unchecked")
     public AbstractService() {
@@ -37,14 +32,23 @@ public abstract class AbstractService<T> implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        Client client = ClientBuilder.newClient();
-        client.register(new LoggingFilter());
-        WebTarget target = client.target(UriBuilder.fromPath(getServiceUrl()));
-        postProcessClient(client);
-        resource = WebResourceFactory.newResource(resourceClass, target);
+        if (providers == null) {
+            synchronized (AbstractService.class) {
+                Map<String, Object> providerBeans = applicationContext.getBeansWithAnnotation(Provider.class);
+                providers = new ArrayList<>(providerBeans.values());
+            }
+        }
+        resource = JAXRSClientFactory.create(getServiceUrl(), resourceClass, providers);
+        authorizeResource(this.resource);
+        addInterceptors(this.resource);
     }
 
-    protected void postProcessClient(Client client) {
+    private void addInterceptors(T resource) {
+        WebClient.getConfig(resource).getHttpConduit().getClient().setConnectionTimeout(defaultTimeOut);
+        WebClient.getConfig(resource).getHttpConduit().getClient().setReceiveTimeout(defaultTimeOut);
+    }
+
+    protected void authorizeResource(T resource) {
         // no-op
     }
 
@@ -53,15 +57,4 @@ public abstract class AbstractService<T> implements InitializingBean {
     public T getClient() {
         return resource;
     }
-
-    public class LoggingFilter implements ClientRequestFilter {
-        private final Logger LOG = Logger.getLogger(LoggingFilter.class.getName());
-
-        @Override
-        public void filter(ClientRequestContext requestContext) {
-            LOG.log(Level.SEVERE, Objects.toString(requestContext.getUri()));
-            LOG.log(Level.INFO, Objects.toString(requestContext.getEntity()));
-        }
-    }
 }
-

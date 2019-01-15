@@ -5,11 +5,10 @@ import org.springframework.beans.factory.annotation.Value;
 public class BackendService<T> extends AbstractService<T> {
 	
 	@Value("${client.backend.address}")
-	private String teckBackendBaseUri;
-
+	private String backendBaseUri;
 
 	@Override
 	protected String getServiceUrl() {
-		return teckBackendBaseUri;
+		return backendBaseUri;
 	}
 }
