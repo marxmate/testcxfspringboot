@@ -6,10 +6,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 //TODO: @Path("/test"), @Produces(MediaType.APPLICATION_JSON), @Consumes(MediaType.APPLICATION_JSON)
-
-@Path("/test")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public interface TestResource {
 
     //TODO: @GET, @Path("/getTestByPathParam"), Test getTestObject(@QueryParam("name") String name, @QueryParam("int") int integerSmall);
