@@ -1,16 +1,31 @@
 package server.api;
 
+import com.sun.xml.internal.messaging.saaj.util.TeeInputStream;
+import model.Test;
+
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-//TODO: @Path("/test"), @Produces(MediaType.APPLICATION_JSON), @Consumes(MediaType.APPLICATION_JSON)
+@Path("/test")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public interface TestResource {
 
-    //TODO: @GET, @Path("/getTestByPathParam"), Test getTestObject(@QueryParam("name") String name, @QueryParam("int") int integerSmall);
+    @GET
+    @Path("/getTest")
+    Test getTestObject(@QueryParam("name") String name, @QueryParam("age") int age);
 
-    //TODO: @POST, @Path("/create"), Test createTest(JsonInput input);
+    @POST
+    @Path("/create")
+    Test createTest(JsonInput input);
 
-    //TODO: @GET, @Path("/name/{name}"), Test getTestByPathParam(@PathParam("name") String name);
+    @GET
+    @Path("/name/{name}")
+    Test getTestByPathParam(@PathParam("name") String name);
 }

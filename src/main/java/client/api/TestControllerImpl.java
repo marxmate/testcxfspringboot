@@ -17,7 +17,6 @@ public class TestControllerImpl implements TestController {
 
     @Override
     public Test getTest() {
-     //   return testService.getClient().getTestByPathParam("randomName");
-        return null;
+        return testService.getClient().getTestByPathParam("randomName");
     }
 }
